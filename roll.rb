@@ -1,15 +1,7 @@
 require 'sinatra'
 require 'json'
 
-InvalidTokenError = Class.new(Exception)
-
-get '/' do
-  redirect '/roll'
-end
-
 post '/roll' do
-  raise(InvalidTokenError) unless params[:token] == ENV['SLACK_TOKEN']
-
   text = params[:text].strip ||= ''
 
   if text =~ /-?\d+/
