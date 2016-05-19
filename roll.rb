@@ -2,19 +2,29 @@ require 'sinatra'
 require 'json'
 
 post '/roll' do
-  text = params[:text].strip ||= ''
+  text = params[:text].strip ||= 0
 
   if text =~ /-?\d+/
     total = roll text.to_i
-    display_message "You rolled a #{total}"
+    display_message_channel "You rolled a #{total}"
   else
-    display_message "Must follow format: '\/roll \<num\>'"
+    display_message_user "Must follow format: '\/roll \<num\>'"
   end
 end
 
-def display_message(message)
+def display_message_channel(message)
   content_type :json
-  {:text => message}.to_json
+  {
+    :response_type => "in_channel",
+    :text => message
+  }.to_json
+end
+
+def display_message_user(message)
+  content_type :json
+  {
+    :text => message
+  }.to_json
 end
 
 def roll(modifier)
