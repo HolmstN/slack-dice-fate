@@ -9,7 +9,7 @@ get '/' do
   redirect '/roll'
 end
 
-get '/roll' do
+post '/roll' do
   raise(InvalidTokenError) unless params[:token] == ENV['SLACK_TOKEN']
 
   text = params[:text].strip ||= ''
