@@ -1,14 +1,20 @@
 require 'sinatra'
+require "sinatra/reloader"
+require "tilt/erubis"
 require 'json'
 
 InvalidTokenError = Class.new(Exception)
 
-post '/roll' do
+get '/' do
+  redirect '/roll'
+end
+
+get '/roll' do
   raise(InvalidTokenError) unless params[:token] == ENV['SLACK_TOKEN']
 
-  text = params[:text].strip
+  text = params[:text].strip ||= ''
 
-  if text =~ /[+-]\d+/
+  if text =~ /-?\d+/
     total = roll text.to_i
     display_message "You rolled a #{total}"
   else
