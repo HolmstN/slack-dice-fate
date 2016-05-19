@@ -1,2 +1,2 @@
-require './app'
+require './roll'
 run Sinatra::Application

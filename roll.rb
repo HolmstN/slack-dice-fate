@@ -1,8 +1,20 @@
 require 'sinatra'
-require 'httparty'
 require 'json'
 
 InvalidTokenError = Class.new(Exception)
+
+post '/roll' do
+  raise(InvalidTokenError) unless params[:token] == ENV['SLACK_TOKEN']
+
+  text = params[:text].strip
+
+  if text =~ /[+-]\d+/
+    total = roll text.to_i
+    display_message "You rolled a #{total}"
+  else
+    display_message "Must follow format: '\/roll \<num\>'"
+  end
+end
 
 def display_message(message)
   content_type :json
@@ -16,18 +28,4 @@ def roll(modifier)
   4.times { rolls << die.sample }
 
   roll_value = rolls.inject(:+) + modifier
-end
-
-
-post '/' do
-  raise(InvalidTokenError) unless params[:token] == ENV['SLACK_TOKEN']
-
-  text = params[:text].strip
-
-  if text =~ /[+-]\d+/
-    total = roll text.to_i
-    display_message "You rolled a #{total}"
-  else
-    display_message "Must follow format: '\/roll \<num\>'"
-  end
 end
