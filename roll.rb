@@ -2,13 +2,14 @@ require 'sinatra'
 require 'json'
 
 post '/roll' do
-  text = params[:text].strip ||= 0
+  text = params[:text] || "0"
 
-  if text =~ /-?\d+/
-    total = roll text.to_i
-    display_message_channel "You rolled a #{total}"
+  if text =~ /[+-]?\d+/
+    roll_values = roll
+    total = roll_values.inject(:+) + text.to_i
+    display_message_channel "You rolled #{roll_values} for \*#{total}\*"
   else
-    display_message_user "Must follow format: '\/roll \<num\>'"
+    display_message_user "Must follow format: '\/roll (\+\/\-)num'"
   end
 end
 
@@ -27,11 +28,12 @@ def display_message_user(message)
   }.to_json
 end
 
-def roll(modifier)
+# Should reformat this to return the array of rolls, then inject elsewhere.
+def roll
   die = [-1, 0, 1]
 
   rolls = []
   4.times { rolls << die.sample }
 
-  roll_value = rolls.inject(:+) + modifier
+  rolls
 end
